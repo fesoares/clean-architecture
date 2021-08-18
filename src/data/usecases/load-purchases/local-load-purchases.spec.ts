@@ -1,5 +1,5 @@
 import { LocalLoadPurchases } from '@/data/usecases';
-import { mockPurchases, CacheStoreSpy, getCacheExpirationDate } from '@/data/tests';
+import { CacheStoreSpy, mockPurchases, getCacheExpirationDate } from '@/data/tests';
 
 type SutTypes = {
   sut: LocalLoadPurchases;
@@ -43,7 +43,7 @@ describe('LocalLoadPurchases', () => {
     expect(purchases).toEqual(cacheStore.fetchResult.value);
   })
 
-  test('Should return an empty list of purchases if cache is expired', async () => {
+  test('Should return an empty list if cache is expired', async () => {
     const currentDate = new Date();
     const timestamp = getCacheExpirationDate(currentDate);
     timestamp.setSeconds(timestamp.getSeconds() - 1);
@@ -54,9 +54,8 @@ describe('LocalLoadPurchases', () => {
       value: mockPurchases
     }
     const purchases = await sut.loadAll();
-    expect(cacheStore.actions).toEqual([CacheStoreSpy.Action.fetch, CacheStoreSpy.Action.delete]);
+    expect(cacheStore.actions).toEqual([CacheStoreSpy.Action.fetch]);
     expect(cacheStore.fetchKey).toBe('purchases');
-    expect(cacheStore.deleteKey).toBe('purchases');
     expect(purchases).toEqual([]);
   })
 
@@ -70,9 +69,8 @@ describe('LocalLoadPurchases', () => {
       value: mockPurchases
     }
     const purchases = await sut.loadAll();
-    expect(cacheStore.actions).toEqual([CacheStoreSpy.Action.fetch, CacheStoreSpy.Action.delete]);
+    expect(cacheStore.actions).toEqual([CacheStoreSpy.Action.fetch]);
     expect(cacheStore.fetchKey).toBe('purchases');
-    expect(cacheStore.deleteKey).toBe('purchases');
     expect(purchases).toEqual([]);
   })
 
@@ -91,5 +89,4 @@ describe('LocalLoadPurchases', () => {
     expect(cacheStore.fetchKey).toBe('purchases');
     expect(purchases).toEqual([]);
   })
-
 })
